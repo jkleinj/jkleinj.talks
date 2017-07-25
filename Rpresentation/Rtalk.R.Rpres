@@ -20,6 +20,7 @@ Overview
 ggplot2
 ========================================================
 (Taken from the ggplot2 wbesite and Wikipedia)
+
 ggplot2 is a plotting system for R,
 which tries to take the good parts of base and lattice graphics
 and none of the bad parts.
@@ -44,6 +45,7 @@ ggbiplot(wine.pca, obs.scale = 1, var.scale = 1,
   theme(legend.direction = 'horizontal', legend.position = 'top')
 ```
 
+
 Biplot
 ========================================================
 ![alt text](biplot_semisuperv.png)
@@ -51,6 +53,7 @@ Biplot
 ```{r, eval=FALSE}
 library(devtools)
 install_github("vqv/ggbiplot")
+library(ggbiplot);
 
 g = qplot(df.u$xvar, df.u$yvar, colour = expr.gradient, size = expr.mean, xlab = u.axis.labs[1], ylab = u.axis.labs[2]);
 
@@ -66,21 +69,69 @@ Heatmap
 ========================================================
 ![alt text](heatmap_key.png)
 ***
-R code
+```{r, eval=FALSE}
+install.packages(“gplots”)
+library(gplots)
+
+mat.dist = function(x) {
+  as.dist((1 - cor(t(x))) / 2,
+  diag = FALSE, upper = FALSE)};
+
+heatmap.2(clu_rnd.mat,
+  distfun = mat.dist,
+  hclustfun = function(x) hclust(x, method = "complete"),
+  trace = "none", key = FALSE, scale = "row", margins = c(4, 6),
+  col = my_palette, labCol = c(""), ColSideColors = cell.col);
+```
 
 
 Gene Bars
 ========================================================
+right: 70%
 ![alt text](Gbars.Tubb3.cutoff.png)
 ***
-R code
+```{r, eval=FALSE}
+pValCutoff = -log10(5e-2 / dim(Yhet)[2]);
+
+Yh.G.1 = Yhet[ , glialID1];
+Yh.N.1 = Yhet[ , neuronalID1];
+
+lmAll <- t(apply(Yhet , 
+      !colnames(Yhet) %in% marker.ids], 2, function (v) {
+    myLm <- lm(v ~ Yh.G.1 + Yh.N.1);
+    myAnova <- anova(myLm);
+    coeffs <- myLm$coeff[-1]; 
+    pVals <- -log10(myAnova[["Pr(>F)"]][-(length(coeffs) + 1)]);
+    return (c(coeffs, pVals));
+}))
+```
+
+```{r, eval=FALSE}
+g = ggplot(gene_corr, aes(x = rank, y = nlogpvalnum)) +
+  geom_bar(stat = "identity", fill = colour, width = 0.75);
+g = g + coord_flip(xlim = c(1, 35), ylim = c(pValCutoff, 22));
+g = g + scale_x_discrete(limits = 
+          as.vector(unlist(gene_corr$geneName)));
+```
 
 
 3D Profile
 ========================================================
 ![alt text](bifurk_3d_box.png)
 ***
-R code
+```{r, eval=FALSE}
+x = glial.marker.exp.mean;
+y = neuronal.marker.exp.mean;
+den3d.cell = kde2d(x, y);
+```
+
+```{r, eval=FALSE}
+persp(den3d.cell, box = TRUE, theta = -120, 
+  col = rgb(red = col.mat,
+        green = (0.65 * col.mat),
+        blue = (1 - col.mat), alpha = alpha.mat),
+  ...);
+```
 
 
 RNA-Seq Alignment Pipeline
