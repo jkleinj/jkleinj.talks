@@ -12,9 +12,26 @@ Overview
 3. Single-cell RNA-Seq
 
 
-1. RNA-Seq analysis of ENS at day E13
+The Enteric Nervous System
 ========================================================
+![alt text](gut.png)
 
+```
+Lineage-dependent Spatial and Functional Organization of the Mammalian Enteric Nervous System,
+Lasrado et al., 2017.
+```
+
+ENS at day E13
+========================================================
+![alt text](ENS_scheme.png)
+***
+(D) Model depicting the organization of small intestine ENS into
+overlapping columns along the serosa-mucosa axis.
+Each clone originates from a founder cell (white) that settles
+in a given location within the outer gut wall (future MP)
+and gives rise to progeny that either remain in the vicinity or
+colonize in a stepwise manner the SMP and mucosa.
+Sister cells are in register along the serosa-mucosa axis.
 
 
 ggplot2
@@ -48,7 +65,9 @@ ggbiplot(wine.pca, obs.scale = 1, var.scale = 1,
 
 Biplot
 ========================================================
-![alt text](biplot_semisuperv.png)
+```{r, out.width= "800px", echo = FALSE}
+knitr::include_graphics("biplot_semisuperv.png")
+```
 ***
 ```{r, eval=FALSE}
 library(devtools)
@@ -67,7 +86,9 @@ g = g + geom_segment(data = df.v[gene.glial.nidx, ], aes(x = 0, y = 0, xend = xv
 
 Heatmap
 ========================================================
-![alt text](heatmap_key.png)
+```{r, out.width = "800px", echo = FALSE}
+knitr::include_graphics("heatmap_key.png")
+```
 ***
 ```{r, eval=FALSE}
 install.packages(“gplots”)
@@ -88,7 +109,9 @@ heatmap.2(clu_rnd.mat,
 Gene Bars
 ========================================================
 right: 70%
-![alt text](Gbars.Tubb3.cutoff.png)
+```{r, out.height = "800px", echo = FALSE}
+knitr::include_graphics("Gbars.Tubb3.cutoff.png")
+```
 ***
 ```{r, eval=FALSE}
 pValCutoff = -log10(5e-2 / dim(Yhet)[2]);
@@ -117,7 +140,10 @@ g = g + scale_x_discrete(limits =
 
 3D Profile
 ========================================================
-![alt text](bifurk_3d_box.png)
+```{r, out.width = "800px", echo = FALSE}
+knitr::include_graphics("bifurk_3d_box.png")
+```
+![profile](bifurk_3d_box.png)
 ***
 ```{r, eval=FALSE}
 x = glial.marker.exp.mean;
@@ -136,16 +162,55 @@ persp(den3d.cell, box = TRUE, theta = -120,
 
 RNA-Seq Alignment Pipeline
 ========================================================
-- Dependency resolution: .fastq.gz <- fastq <- bam <- counts <- table <- normalised table
+- Dependency resolution: sample_x.fastq.gz <- fastq <- bam <- counts <- table <- normalised table
 - GNU Make
     * Macros
     * Rules with dependencies + commands
     * Pattern rules
 
-- Demos
-    1. C program
-    2. Variable compilation
+
+Master Makefile
+========================================================
+```{make, eval=FALSE}
+-include config.mk
+
+SMP = $(notdir $(shell find ./INPUT/${EXP}/ -type d -name ${SAMPLEPREFIX}))
+
+all : align postalign proc 
+align : config exp program ome samplein input output
+postalign : exp sampleout count
+proc : log merge quality normalise pca 
+
+program :
+    cd PROGRAM || exit 1 ; ${MAKE} all "PARALLEL=${PARALLEL}" "GUNZIP=${GUNZIP}"
+      "ALI=${ALI}" "RSCRIPT=${RSCRIPT}" "FEATURECOUNTS=${FEATURECOUNTS}"
+
+output :
+    cd OUTPUT || exit 1 ; ${MAKE} all "EXP=${EXP}" "SMP=${SMP}"
+      "SAMPLEPREFIX=${SAMPLEPREFIX}" "GENALIHOME=${GENALIHOME}"
+      "CLU=${CLU}" "QUEUE=${QUEUE}" "ALI=${ALI}" "ALIMODE=${ALIMODE}"
+      "ALIOPT=${ALIOPT}" "OME=${OME}" "SINGLE=${SINGLE}"
+      "SLEEP=${SLEEP}" "NCPU=${NCPU}""
+```
 
 
+Output Makefile
+========================================================
+
+
+
+========================================================
+
+
+
+========================================================
+
+
+
+========================================================
+
+
+
+========================================================
 
 

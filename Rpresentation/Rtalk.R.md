@@ -12,9 +12,26 @@ Overview
 3. Single-cell RNA-Seq
 
 
-1. RNA-Seq analysis of ENS at day E13
+The Enteric Nervous System
 ========================================================
+![alt text](gut.png)
 
+```
+Lineage-dependent Spatial and Functional Organization of the Mammalian Enteric Nervous System,
+Lasrado et al., 2017.
+```
+
+ENS at day E13
+========================================================
+![alt text](ENS_scheme.png)
+***
+(D) Model depicting the organization of small intestine ENS into
+overlapping columns along the serosa-mucosa axis.
+Each clone originates from a founder cell (white) that settles
+in a given location within the outer gut wall (future MP)
+and gives rise to progeny that either remain in the vicinity or
+colonize in a stepwise manner the SMP and mucosa.
+Sister cells are in register along the serosa-mucosa axis.
 
 
 ggplot2
@@ -41,7 +58,7 @@ install.packages("ggplot2")
 
 Biplot
 ========================================================
-![alt text](biplot_semisuperv.png)
+<img src="biplot_semisuperv.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" width="800px" />
 ***
 
 ```r
@@ -61,7 +78,7 @@ g = g + geom_segment(data = df.v[gene.glial.nidx, ], aes(x = 0, y = 0, xend = xv
 
 Heatmap
 ========================================================
-![alt text](heatmap_key.png)
+<img src="heatmap_key.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" width="800px" />
 ***
 
 ```r
@@ -83,7 +100,7 @@ heatmap.2(clu_rnd.mat,
 Gene Bars
 ========================================================
 right: 70%
-![alt text](Gbars.Tubb3.cutoff.png)
+<img src="Gbars.Tubb3.cutoff.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" height="800px" />
 ***
 
 ```r
@@ -114,7 +131,8 @@ g = g + scale_x_discrete(limits =
 
 3D Profile
 ========================================================
-![alt text](bifurk_3d_box.png)
+<img src="bifurk_3d_box.png" title="plot of chunk unnamed-chunk-10" alt="plot of chunk unnamed-chunk-10" width="800px" />
+![profile](bifurk_3d_box.png)
 ***
 
 ```r
@@ -135,16 +153,56 @@ persp(den3d.cell, box = TRUE, theta = -120,
 
 RNA-Seq Alignment Pipeline
 ========================================================
-- Dependency resolution: .fastq.gz <- fastq <- bam <- counts <- table <- normalised table
+- Dependency resolution: sample_x.fastq.gz <- fastq <- bam <- counts <- table <- normalised table
 - GNU Make
     * Macros
     * Rules with dependencies + commands
     * Pattern rules
 
-- Demos
-    1. C program
-    2. Variable compilation
+
+Master Makefile
+========================================================
+
+```make
+-include config.mk
+
+SMP = $(notdir $(shell find ./INPUT/${EXP}/ -type d -name ${SAMPLEPREFIX}))
+
+all : align postalign proc 
+align : config exp program ome samplein input output
+postalign : exp sampleout count
+proc : log merge quality normalise pca 
+
+program :
+    cd PROGRAM || exit 1 ; ${MAKE} all "PARALLEL=${PARALLEL}" "GUNZIP=${GUNZIP}"
+      "ALI=${ALI}" "RSCRIPT=${RSCRIPT}" "FEATURECOUNTS=${FEATURECOUNTS}"
+
+output :
+    cd OUTPUT || exit 1 ; ${MAKE} all "EXP=${EXP}" "SMP=${SMP}"
+      "SAMPLEPREFIX=${SAMPLEPREFIX}" "GENALIHOME=${GENALIHOME}"
+      "CLU=${CLU}" "QUEUE=${QUEUE}" "ALI=${ALI}" "ALIMODE=${ALIMODE}"
+      "ALIOPT=${ALIOPT}" "OME=${OME}" "SINGLE=${SINGLE}"
+      "SLEEP=${SLEEP}" "NCPU=${NCPU}""
+```
 
 
+Output Makefile
+========================================================
+
+
+
+========================================================
+
+
+
+========================================================
+
+
+
+========================================================
+
+
+
+========================================================
 
 
