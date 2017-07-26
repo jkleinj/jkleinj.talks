@@ -9,7 +9,7 @@ Overview
 ========================================================
 1. Semi-supervised RNA-Seq analysis
 2. Data Pipelines (with 'GNU make')
-3. Single-cell RNA-Seq
+3. Single-cell RNA-Seq Normalisation
 
 
 1. The Enteric Nervous System
@@ -17,8 +17,8 @@ Overview
 ![alt text](gut.png)
 
 ```
-Lineage-dependent Spatial and Functional Organization of the Mammalian Enteric Nervous System,
-Lasrado et al., 2017.
+Lineage-dependent Spatial and Functional Organization of the Mammalian Enteric Nervous System;
+Lasrado, Pachnis et al. (2017).
 ```
 
 ENS at day E13
@@ -143,7 +143,6 @@ g = g + scale_x_discrete(limits =
 ```{r, out.width = "800px", echo = FALSE}
 knitr::include_graphics("bifurk_3d_box.png")
 ```
-![profile](bifurk_3d_box.png)
 ***
 ```{r, eval = FALSE}
 x = glial.marker.exp.mean;
@@ -259,51 +258,166 @@ sleep ${SLEEP}
 ```
 
 
-The Single-cell Normalisation Problem 
+scRNA-Seq Normalisation: Global Factor
 ========================================================
 ```{r, eval = TRUE, echo = FALSE}
 library(ggplot2);
 ## create synthetic expression data for 6 cells
 ## number of genes
-g = c(1:12);
+g = c(1:8);
 ## cells
-c1 = data.frame(rep(1, length(g)), log(2^g));
+c1 = data.frame(rep(1, length(g)), log2(2^g));
 colnames(c1) = c("cell", "expr");
-c2 = data.frame(rep(2, length(g)), log(2^g) * 1.1);
+c2 = data.frame(rep(2, length(g)), log2(2^g) * 1.1);
 colnames(c2) = c("cell", "expr");
-c3 = data.frame(rep(3, length(g)), log(2^g) * 1.2);
+c3 = data.frame(rep(3, length(g)), log2(2^g) * 1.2);
 colnames(c3) = c("cell", "expr");
-c4 = data.frame(rep(4, length(g)), log(2^g * 1.7));
+c4 = data.frame(rep(4, length(g)), log2(2^g) * 1.7);
 colnames(c4) = c("cell", "expr");
-c5 = data.frame(rep(5, length(g)), log(2^g * 1.6));
+c5 = data.frame(rep(5, length(g)), log2(2^g) * 1.6);
 colnames(c5) = c("cell", "expr");
-c6 = data.frame(rep(6, length(g)), log(2^g * 1.5));
+c6 = data.frame(rep(6, length(g)), log2(2^g) * 1.5);
 colnames(c6) = c("cell", "expr");
 
 df = rbind(c1, c2, c3, c4, c5, c6);
-colnames(dfc) = c("cell", "expr");
-
-cols = c("1" = "blue1", "2" = "blue2", "3" = "blue3",
-          "4" = "orange1", "5" = "orange2", "6" = "orange3");
+colnames(df) = c("cell", "expr");
 
 ggplot() +
 geom_crossbar(data = df, aes(x = cell, ymin = expr, ymax = expr, y = expr, colour = cell)) +
+ylab("log(expr)") +
 scale_x_continuous(breaks = c(1,2,3,4,5,6), labels = c("cell1", "cell2", "cell3", "cell4", "cell5", "cell6"));
 ```
+***
+* Plotted is the log expression of 8 genes or gene groups (biological factors) in 6 single cells
+* The difference between the expression of individual cells is a constant factor.
+* A simple linear model of the log-expression normalises the data set:
+```
+v = (1, 1.1, 1.2, 1.7, 1.6, 1.5);
+```
+* The 'global factor' model is naive and unrealistic, because the data structure is not so simple.
 
-scLVM
+
+More Complicated: + Differential Gene Expression
 ========================================================
+```{r, eval = TRUE, echo = FALSE}
+library(ggplot2);
+## create synthetic expression data for 6 cells
+## number of genes
+g = c(1:8);
+## cells
+c1 = data.frame(rep(1, length(g)), log2(2^g));
+colnames(c1) = c("cell", "expr");
+c2 = data.frame(rep(2, length(g)), log2(2^g) * 1.1);
+colnames(c2) = c("cell", "expr");
+c3 = data.frame(rep(3, length(g)), log2(2^g) * 1.2);
+colnames(c3) = c("cell", "expr");
+c4 = data.frame(rep(4, length(g)), log2(2^g) * 1.7);
+c4[8, 2] = c4[8, 2] + 2;
+colnames(c4) = c("cell", "expr");
+c5 = data.frame(rep(5, length(g)), log2(2^g) * 1.6);
+c5[8, 2] = c5[8, 2] + 2.5;
+colnames(c5) = c("cell", "expr");
+c6 = data.frame(rep(6, length(g)), log2(2^g) * 1.5);
+c6[8, 2] = c6[8, 2] + 2.5;
+colnames(c6) = c("cell", "expr");
+
+df = rbind(c1, c2, c3, c4, c5, c6);
+colnames(df) = c("cell", "expr");
+
+ggplot() +
+geom_crossbar(data = df, aes(x = cell, ymin = expr, ymax = expr, y = expr, colour = cell)) +
+ylab("log(expr)") +
+scale_x_continuous(breaks = c(1,2,3,4,5,6), labels = c("cell1", "cell2", "cell3", "cell4", "cell5", "cell6"));
+```
+***
+* Here we have a highly differentially expressed gene in cell group (4,5,6).
+* How do we normalise now?
+
+1. Either we ignore differentially expressed genes
+2. or we compute normalisation factors for quantiles.
 
 
-scNORM
+Even More Complicated: + Zero Inflation
 ========================================================
+```{r, eval = TRUE, echo = FALSE}
+library(ggplot2);
+## create synthetic expression data for 6 cells
+## number of genes
+g = c(1:8);
+## cells
+c1 = data.frame(rep(1, length(g)), log2(2^g));
+c1[c(1,2,3,5), 2] = 0;
+colnames(c1) = c("cell", "expr");
+c2 = data.frame(rep(2, length(g)), log2(2^g) * 1.1);
+c2[c(2,3,6), 2] = 0;
+colnames(c2) = c("cell", "expr");
+c3 = data.frame(rep(3, length(g)), log2(2^g) * 1.2);
+c3[c(1,2,4,5), 2] = 0;
+colnames(c3) = c("cell", "expr");
+c4 = data.frame(rep(4, length(g)), log2(2^g) * 1.7);
+c4[c(2,4), 2] = 0;
+c4[8, 2] = c4[8, 2] + 2;
+colnames(c4) = c("cell", "expr");
+c5 = data.frame(rep(5, length(g)), log2(2^g) * 1.6);
+c5[c(1,4,7), 2] = 0;
+c5[8, 2] = c5[8, 2] + 2.5;
+colnames(c5) = c("cell", "expr");
+c6 = data.frame(rep(6, length(g)), log2(2^g) * 1.5);
+c6[c(1,2,3), 2] = 0;
+c6[8, 2] = c6[8, 2] + 2.5;
+colnames(c6) = c("cell", "expr");
 
-  
+df = rbind(c1, c2, c3, c4, c5, c6);
+colnames(df) = c("cell", "expr");
+
+ggplot() +
+geom_crossbar(data = df, aes(x = cell, ymin = expr, ymax = expr, y = expr, colour = cell)) +
+ylab("log(expr)") +
+scale_x_continuous(breaks = c(1,2,3,4,5,6), labels = c("cell1", "cell2", "cell3", "cell4", "cell5", "cell6"));
+```
+***
+* Zero inflation means that many genes are not detected, although they should be detectable.
+* The expression values ==0 distort averaging, which is used in some RNA-Seq software like DESeq.
+* Additionally, methods that rely on multi-variate expression vectors are compromised.
+
+
+Even More Complicated: + Dependency on Count-Depth
+========================================================
+```{r, out.width = "800px", echo = FALSE}
+knitr::include_graphics("scnorm.png")
+```
+***
+* Sequencing depth influences the relative gene expression values.
+* The SCnorm package addresses this problem by performing a controlled quantile regression.
+
+```
+SCnorm: robust normalization of single-cell RNA-seq data;
+Bacher, Kendziorski et al. (2017).
+```
+
+
 scran
 ========================================================
+```{r, out.width = "800px", echo = FALSE}
+knitr::include_graphics("scran.png")
+```
+***
+* Compute batch vector between pairs of mutual nearest neighbour cells.
+* Calculate cell-specific batch correction vector from weighted average over all pairwise vectors, using a Gaussian kernel.
+
+```
+Correcting batch effects in single-cell RNA sequencing data by matching mutual nearest neighbours;
+Haghverdi, Marioni et al. (2017).
+```
 
 
 zinb-wave
 ========================================================
+```{r, out.width = "1400", echo = FALSE}
+knitr::include_graphics("zinb_wave.png")
+```
 
-
+```
+ZINB-WaVE: A general and flexible method for signal extraction from single-cell RNA-seq data;
+Risso, Vert et al. (2017).
+```
