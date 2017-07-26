@@ -1,7 +1,7 @@
 Group Meeting
 ========================================================
 author: Jens Kleinjung
-date: 06.07.2017
+date: 27.07.2017
 autosize: true
 
 
@@ -12,7 +12,7 @@ Overview
 3. Single-cell RNA-Seq
 
 
-The Enteric Nervous System
+1. The Enteric Nervous System
 ========================================================
 ![alt text](gut.png)
 
@@ -151,14 +151,39 @@ persp(den3d.cell, box = TRUE, theta = -120,
 ```
 
 
-RNA-Seq Alignment Pipeline
+2. RNA-Seq Alignment Pipeline
 ========================================================
 - Dependency resolution: sample_x.fastq.gz <- fastq <- bam <- counts <- table <- normalised table
 - GNU Make
     * Macros
-    * Rules with dependencies + commands
+    * Rules with dependencies + external programs
     * Pattern rules
 
+
+Pipeline Structure
+========================================================
+```
+-root/Makefile
+ +- PROGRAM/Makefile
+  -       ./<aligner>
+ +- OME/Makefile
+  -   ./<genome>
+  -   /<transcriptome>
+ +- INPUT/Makefile
+  -     ./<experiment>/<sample1>/<sequence>_R1.fastq
+  -                  ./<sample2>/<sequence>_R1.fastq
+ +- OUTPUT/Makefile
+  -      ./<experiment>/<sample1>/<sequence>.counts
+  -                   ./<sample2>/<sequence>.counts
+ +- MERGE/Makefile
+        ./genali.merge
+ +- ASSEMBLE/Makefile
+  -        ./genali.assemble
+ +- QUALITY/Makefile
+  -       ./genali.quality
+ +- NORMALISE/Makefile
+  -         ./genali.normalise
+```
 
 Master Makefile
 ========================================================
@@ -186,23 +211,52 @@ output :
 ```
 
 
-Output Makefile
+OUTPUT Makefile with Dependency
+========================================================
+
+```make
+SMPOUT = $(notdir $(shell find ./${EXP}/ -type d -name ${SAMPLEPREFIX}))
+
+all : sampledir link mkalign
+
+ifeq ($(strip ${ALI}),tophat2)
+    for X in ${SMP} ; do \
+        ${MAKE} align_tophat2 "EXP=${EXP}" "X=$$X" \
+                         "GENALIHOME=${GENALIHOME}" \
+                         "CLU=${CLU}" "QUEUE=${QUEUE}" \
+                         "ALI=${ALI}" "ALIMODE=${ALIMODE}" "ALIOPT=${ALIOPT}" \
+                         "OME=${OME}" "SINGLE=${SINGLE}" \
+                         "SLEEP=${SLEEP}" "NCPU=${NCPU}" ; \
+    done
+    srun --dependency=singleton --job-name=GIfa.${EXPNR} singleton.bash
+endif
+
+align_tophat2 : ${EXP}/$X/accepted_hits.bam
+```
+
+
+Pattern Rules
+========================================================
+```
+%/accepted_hits.bam : %/genali_R1.fastq
+$(info running in single-end mode)
+
+srun --job-name=GIfa.${EXPNR} ${QUEUE}
+  -o ${EXP}/$X/genali.o -e ${EXP}/$X/genali.e
+  ${GENALIHOME}/PROGRAM/${ALI} ${ALIOPT}
+  -p ${NCPU} -o ${EXP}/$X
+  ../OME/$(strip ${OME})/Sequence/Bowtie2Index/genome $^
+    > ${EXP}/$X/aligner.o 2> ${EXP}/$X/aligner.e &
+
+sleep ${SLEEP}
+```
+
+
+The Single-cell Normalisation Problem 
 ========================================================
 
 
 
-========================================================
-
-
-
-========================================================
-
-
-
-========================================================
-
-
-
-========================================================
-
-
+```
+Error in colnames(dfc) = c("cell", "expr") : object 'dfc' not found
+```

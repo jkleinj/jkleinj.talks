@@ -1,7 +1,7 @@
 Group Meeting
 ========================================================
 author: Jens Kleinjung
-date: 06.07.2017
+date: 27.07.2017
 autosize: true
 
 
@@ -12,7 +12,7 @@ Overview
 3. Single-cell RNA-Seq
 
 
-The Enteric Nervous System
+1. The Enteric Nervous System
 ========================================================
 ![alt text](gut.png)
 
@@ -69,7 +69,7 @@ Biplot
 knitr::include_graphics("biplot_semisuperv.png")
 ```
 ***
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 library(devtools)
 install_github("vqv/ggbiplot")
 library(ggbiplot);
@@ -90,7 +90,7 @@ Heatmap
 knitr::include_graphics("heatmap_key.png")
 ```
 ***
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 install.packages(“gplots”)
 library(gplots)
 
@@ -113,7 +113,7 @@ right: 70%
 knitr::include_graphics("Gbars.Tubb3.cutoff.png")
 ```
 ***
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 pValCutoff = -log10(5e-2 / dim(Yhet)[2]);
 
 Yh.G.1 = Yhet[ , glialID1];
@@ -129,7 +129,7 @@ lmAll <- t(apply(Yhet ,
 }))
 ```
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 g = ggplot(gene_corr, aes(x = rank, y = nlogpvalnum)) +
   geom_bar(stat = "identity", fill = colour, width = 0.75);
 g = g + coord_flip(xlim = c(1, 35), ylim = c(pValCutoff, 22));
@@ -145,13 +145,13 @@ knitr::include_graphics("bifurk_3d_box.png")
 ```
 ![profile](bifurk_3d_box.png)
 ***
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 x = glial.marker.exp.mean;
 y = neuronal.marker.exp.mean;
 den3d.cell = kde2d(x, y);
 ```
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 persp(den3d.cell, box = TRUE, theta = -120, 
   col = rgb(red = col.mat,
         green = (0.65 * col.mat),
@@ -160,18 +160,43 @@ persp(den3d.cell, box = TRUE, theta = -120,
 ```
 
 
-RNA-Seq Alignment Pipeline
+2. RNA-Seq Alignment Pipeline
 ========================================================
 - Dependency resolution: sample_x.fastq.gz <- fastq <- bam <- counts <- table <- normalised table
 - GNU Make
     * Macros
-    * Rules with dependencies + commands
+    * Rules with dependencies + external programs
     * Pattern rules
 
 
+Pipeline Structure
+========================================================
+```
+-root/Makefile
+ +- PROGRAM/Makefile
+  -       ./<aligner>
+ +- OME/Makefile
+  -   ./<genome>
+  -   /<transcriptome>
+ +- INPUT/Makefile
+  -     ./<experiment>/<sample1>/<sequence>_R1.fastq
+  -                  ./<sample2>/<sequence>_R1.fastq
+ +- OUTPUT/Makefile
+  -      ./<experiment>/<sample1>/<sequence>.counts
+  -                   ./<sample2>/<sequence>.counts
+ +- MERGE/Makefile
+        ./genali.merge
+ +- ASSEMBLE/Makefile
+  -        ./genali.assemble
+ +- QUALITY/Makefile
+  -       ./genali.quality
+ +- NORMALISE/Makefile
+  -         ./genali.normalise
+```
+
 Master Makefile
 ========================================================
-```{make, eval=FALSE}
+```{make, eval = FALSE}
 -include config.mk
 
 SMP = $(notdir $(shell find ./INPUT/${EXP}/ -type d -name ${SAMPLEPREFIX}))
@@ -194,23 +219,91 @@ output :
 ```
 
 
-Output Makefile
+OUTPUT Makefile with Dependency
+========================================================
+```{make, eval = FALSE}
+SMPOUT = $(notdir $(shell find ./${EXP}/ -type d -name ${SAMPLEPREFIX}))
+
+all : sampledir link mkalign
+
+ifeq ($(strip ${ALI}),tophat2)
+    for X in ${SMP} ; do \
+        ${MAKE} align_tophat2 "EXP=${EXP}" "X=$$X" \
+                         "GENALIHOME=${GENALIHOME}" \
+                         "CLU=${CLU}" "QUEUE=${QUEUE}" \
+                         "ALI=${ALI}" "ALIMODE=${ALIMODE}" "ALIOPT=${ALIOPT}" \
+                         "OME=${OME}" "SINGLE=${SINGLE}" \
+                         "SLEEP=${SLEEP}" "NCPU=${NCPU}" ; \
+    done
+    srun --dependency=singleton --job-name=GIfa.${EXPNR} singleton.bash
+endif
+
+align_tophat2 : ${EXP}/$X/accepted_hits.bam
+```
+
+
+Pattern Rules
+========================================================
+```
+%/accepted_hits.bam : %/genali_R1.fastq
+$(info running in single-end mode)
+
+srun --job-name=GIfa.${EXPNR} ${QUEUE}
+  -o ${EXP}/$X/genali.o -e ${EXP}/$X/genali.e
+  ${GENALIHOME}/PROGRAM/${ALI} ${ALIOPT}
+  -p ${NCPU} -o ${EXP}/$X
+  ../OME/$(strip ${OME})/Sequence/Bowtie2Index/genome $^
+    > ${EXP}/$X/aligner.o 2> ${EXP}/$X/aligner.e &
+
+sleep ${SLEEP}
+```
+
+
+The Single-cell Normalisation Problem 
+========================================================
+```{r, eval = TRUE, echo = FALSE}
+library(ggplot2);
+## create synthetic expression data for 6 cells
+## number of genes
+g = c(1:12);
+## cells
+c1 = data.frame(rep(1, length(g)), log(2^g));
+colnames(c1) = c("cell", "expr");
+c2 = data.frame(rep(2, length(g)), log(2^g) * 1.1);
+colnames(c2) = c("cell", "expr");
+c3 = data.frame(rep(3, length(g)), log(2^g) * 1.2);
+colnames(c3) = c("cell", "expr");
+c4 = data.frame(rep(4, length(g)), log(2^g * 1.7));
+colnames(c4) = c("cell", "expr");
+c5 = data.frame(rep(5, length(g)), log(2^g * 1.6));
+colnames(c5) = c("cell", "expr");
+c6 = data.frame(rep(6, length(g)), log(2^g * 1.5));
+colnames(c6) = c("cell", "expr");
+
+df = rbind(c1, c2, c3, c4, c5, c6);
+colnames(dfc) = c("cell", "expr");
+
+cols = c("1" = "blue1", "2" = "blue2", "3" = "blue3",
+          "4" = "orange1", "5" = "orange2", "6" = "orange3");
+
+ggplot() +
+geom_crossbar(data = df, aes(x = cell, ymin = expr, ymax = expr, y = expr, colour = cell)) +
+scale_x_continuous(breaks = c(1,2,3,4,5,6), labels = c("cell1", "cell2", "cell3", "cell4", "cell5", "cell6"));
+```
+
+scLVM
 ========================================================
 
 
+scNORM
+========================================================
 
+  
+scran
 ========================================================
 
 
-
-========================================================
-
-
-
-========================================================
-
-
-
+zinb-wave
 ========================================================
 
 
