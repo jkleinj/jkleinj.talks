@@ -8,8 +8,9 @@ autosize: true
 Overview
 ========================================================
 1. Semi-supervised RNA-Seq analysis
-2. Data Pipelines (with 'GNU make')
-3. Single-cell RNA-Seq Normalisation
+2. Single-cell RNA-Seq Normalisation
+3. Data Pipelines (with 'GNU make')
+4. Trends (Keystone and ISMB conferences)
 
 
 1. The Enteric Nervous System
@@ -150,7 +151,75 @@ persp(den3d.cell, box = TRUE, theta = -120,
 ```
 
 
-2. RNA-Seq Alignment Pipeline
+2. scRNA-Seq Normalisation: Global Factor
+========================================================
+![plot of chunk unnamed-chunk-13](Rtalk.R-figure/unnamed-chunk-13-1.png)
+***
+* Plotted is the log expression of 8 genes or gene groups (biological factors) in 6 single cells
+* The difference between the expression of individual cells is a constant factor.
+* A simple linear model of the log-expression normalises the data set:
+```
+v = (1, 1.1, 1.2, 1.7, 1.6, 1.5);
+```
+* The 'global factor' model is naive and unrealistic, because the data structure is not so simple.
+
+
+More Complicated: + Differential Gene Expression
+========================================================
+![plot of chunk unnamed-chunk-14](Rtalk.R-figure/unnamed-chunk-14-1.png)
+***
+* Here we have a highly differentially expressed gene in cell group (4,5,6).
+* How do we normalise now?
+
+1. Either we ignore differentially expressed genes
+2. or we compute normalisation factors for quantiles.
+
+
+Even More Complicated: + Zero Inflation
+========================================================
+![plot of chunk unnamed-chunk-15](Rtalk.R-figure/unnamed-chunk-15-1.png)
+***
+* Zero inflation means that many genes are not detected, although they should be detectable.
+* The expression values ==0 distort averaging, which is used in some RNA-Seq software like DESeq.
+* Additionally, methods that rely on multi-variate expression vectors are compromised.
+
+
+Even More Complicated: + Dependency on Count-Depth
+========================================================
+<img src="scnorm.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" width="800px" />
+***
+* Sequencing depth influences the relative gene expression values.
+* The SCnorm package addresses this problem by performing a controlled quantile regression.
+
+```
+SCnorm: robust normalization of single-cell RNA-seq data;
+Bacher, Kendziorski et al. (2017).
+```
+
+
+scran
+========================================================
+<img src="scran.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" width="800px" />
+***
+* Compute batch vector between pairs of mutual nearest neighbour cells.
+* Calculate cell-specific batch correction vector from weighted average over all pairwise vectors, using a Gaussian kernel.
+
+```
+Correcting batch effects in single-cell RNA sequencing data by matching mutual nearest neighbours;
+Haghverdi, Marioni et al. (2017).
+```
+
+
+zinb-wave
+========================================================
+<img src="zinb_wave.png" title="plot of chunk unnamed-chunk-18" alt="plot of chunk unnamed-chunk-18" width="1400" />
+
+```
+ZINB-WaVE: A general and flexible method for signal extraction from single-cell RNA-seq data;
+Risso, Vert et al. (2017).
+```
+
+3. RNA-Seq Alignment Pipeline
 ========================================================
 - Dependency resolution: sample_x.fastq.gz <- fastq <- bam <- counts <- table <- normalised table
 - GNU Make
@@ -251,70 +320,13 @@ sleep ${SLEEP}
 ```
 
 
-scRNA-Seq Normalisation: Global Factor
+4. Trends
 ========================================================
-![plot of chunk unnamed-chunk-15](Rtalk.R-figure/unnamed-chunk-15-1.png)
-***
-* Plotted is the log expression of 8 genes or gene groups (biological factors) in 6 single cells
-* The difference between the expression of individual cells is a constant factor.
-* A simple linear model of the log-expression normalises the data set:
-```
-v = (1, 1.1, 1.2, 1.7, 1.6, 1.5);
-```
-* The 'global factor' model is naive and unrealistic, because the data structure is not so simple.
+* Machine learning becomes increasingly important
+* Nano-pore sequencing (10% error rate) produces long reads, leading to easier genome assembly
+* Fast algorighms for genome assembly and comparison (Adam M. Philippy)
+* 3D structure and dynamics (multi-level modelling) of chromatin (Paul Michalski)
+* Sequencing is all forms, in particular for immunologic and cancer studies
+* Microtome dissection and sequencing of the nucleus to map chromatin contacts (Ana Pombo)
+* Multiplexed Ion Beam Imaging (MIBI) using secondary mass spectrometry (Garry P. Nolan)
 
-
-More Complicated: + Differential Gene Expression
-========================================================
-![plot of chunk unnamed-chunk-16](Rtalk.R-figure/unnamed-chunk-16-1.png)
-***
-* Here we have a highly differentially expressed gene in cell group (4,5,6).
-* How do we normalise now?
-
-1. Either we ignore differentially expressed genes
-2. or we compute normalisation factors for quantiles.
-
-
-Even More Complicated: + Zero Inflation
-========================================================
-![plot of chunk unnamed-chunk-17](Rtalk.R-figure/unnamed-chunk-17-1.png)
-***
-* Zero inflation means that many genes are not detected, although they should be detectable.
-* The expression values ==0 distort averaging, which is used in some RNA-Seq software like DESeq.
-* Additionally, methods that rely on multi-variate expression vectors are compromised.
-
-
-Even More Complicated: + Dependency on Count-Depth
-========================================================
-<img src="scnorm.png" title="plot of chunk unnamed-chunk-18" alt="plot of chunk unnamed-chunk-18" width="800px" />
-***
-* Sequencing depth influences the relative gene expression values.
-* The SCnorm package addresses this problem by performing a controlled quantile regression.
-
-```
-SCnorm: robust normalization of single-cell RNA-seq data;
-Bacher, Kendziorski et al. (2017).
-```
-
-
-scran
-========================================================
-<img src="scran.png" title="plot of chunk unnamed-chunk-19" alt="plot of chunk unnamed-chunk-19" width="800px" />
-***
-* Compute batch vector between pairs of mutual nearest neighbour cells.
-* Calculate cell-specific batch correction vector from weighted average over all pairwise vectors, using a Gaussian kernel.
-
-```
-Correcting batch effects in single-cell RNA sequencing data by matching mutual nearest neighbours;
-Haghverdi, Marioni et al. (2017).
-```
-
-
-zinb-wave
-========================================================
-<img src="zinb_wave.png" title="plot of chunk unnamed-chunk-20" alt="plot of chunk unnamed-chunk-20" width="1400" />
-
-```
-ZINB-WaVE: A general and flexible method for signal extraction from single-cell RNA-seq data;
-Risso, Vert et al. (2017).
-```

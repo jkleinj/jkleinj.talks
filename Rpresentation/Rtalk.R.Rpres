@@ -8,8 +8,9 @@ autosize: true
 Overview
 ========================================================
 1. Semi-supervised RNA-Seq analysis
-2. Data Pipelines (with 'GNU make')
-3. Single-cell RNA-Seq Normalisation
+2. Single-cell RNA-Seq Normalisation
+3. Data Pipelines (with 'GNU make')
+4. Trends (Keystone and ISMB conferences)
 
 
 1. The Enteric Nervous System
@@ -159,106 +160,7 @@ persp(den3d.cell, box = TRUE, theta = -120,
 ```
 
 
-2. RNA-Seq Alignment Pipeline
-========================================================
-- Dependency resolution: sample_x.fastq.gz <- fastq <- bam <- counts <- table <- normalised table
-- GNU Make
-    * Macros
-    * Rules with dependencies + external programs
-    * Pattern rules
-
-
-Pipeline Structure
-========================================================
-```
--root/Makefile
- +- PROGRAM/Makefile
-  -       ./<aligner>
- +- OME/Makefile
-  -   ./<genome>
-  -   /<transcriptome>
- +- INPUT/Makefile
-  -     ./<experiment>/<sample1>/<sequence>_R1.fastq
-  -                  ./<sample2>/<sequence>_R1.fastq
- +- OUTPUT/Makefile
-  -      ./<experiment>/<sample1>/<sequence>.counts
-  -                   ./<sample2>/<sequence>.counts
- +- MERGE/Makefile
-        ./genali.merge
- +- ASSEMBLE/Makefile
-  -        ./genali.assemble
- +- QUALITY/Makefile
-  -       ./genali.quality
- +- NORMALISE/Makefile
-  -         ./genali.normalise
-```
-
-Master Makefile
-========================================================
-```{make, eval = FALSE}
--include config.mk
-
-SMP = $(notdir $(shell find ./INPUT/${EXP}/ -type d -name ${SAMPLEPREFIX}))
-
-all : align postalign proc 
-align : config exp program ome samplein input output
-postalign : exp sampleout count
-proc : log merge quality normalise pca 
-
-program :
-    cd PROGRAM || exit 1 ; ${MAKE} all "PARALLEL=${PARALLEL}" "GUNZIP=${GUNZIP}"
-      "ALI=${ALI}" "RSCRIPT=${RSCRIPT}" "FEATURECOUNTS=${FEATURECOUNTS}"
-
-output :
-    cd OUTPUT || exit 1 ; ${MAKE} all "EXP=${EXP}" "SMP=${SMP}"
-      "SAMPLEPREFIX=${SAMPLEPREFIX}" "GENALIHOME=${GENALIHOME}"
-      "CLU=${CLU}" "QUEUE=${QUEUE}" "ALI=${ALI}" "ALIMODE=${ALIMODE}"
-      "ALIOPT=${ALIOPT}" "OME=${OME}" "SINGLE=${SINGLE}"
-      "SLEEP=${SLEEP}" "NCPU=${NCPU}""
-```
-
-
-OUTPUT Makefile with Dependency
-========================================================
-```{make, eval = FALSE}
-SMPOUT = $(notdir $(shell find ./${EXP}/ -type d -name ${SAMPLEPREFIX}))
-
-all : sampledir link mkalign
-
-ifeq ($(strip ${ALI}),tophat2)
-    for X in ${SMP} ; do \
-        ${MAKE} align_tophat2 "EXP=${EXP}" "X=$$X" \
-                         "GENALIHOME=${GENALIHOME}" \
-                         "CLU=${CLU}" "QUEUE=${QUEUE}" \
-                         "ALI=${ALI}" "ALIMODE=${ALIMODE}" "ALIOPT=${ALIOPT}" \
-                         "OME=${OME}" "SINGLE=${SINGLE}" \
-                         "SLEEP=${SLEEP}" "NCPU=${NCPU}" ; \
-    done
-    srun --dependency=singleton --job-name=GIfa.${EXPNR} singleton.bash
-endif
-
-align_tophat2 : ${EXP}/$X/accepted_hits.bam
-```
-
-
-Pattern Rules
-========================================================
-```
-%/accepted_hits.bam : %/genali_R1.fastq
-$(info running in single-end mode)
-
-srun --job-name=GIfa.${EXPNR} ${QUEUE}
-  -o ${EXP}/$X/genali.o -e ${EXP}/$X/genali.e
-  ${GENALIHOME}/PROGRAM/${ALI} ${ALIOPT}
-  -p ${NCPU} -o ${EXP}/$X
-  ../OME/$(strip ${OME})/Sequence/Bowtie2Index/genome $^
-    > ${EXP}/$X/aligner.o 2> ${EXP}/$X/aligner.e &
-
-sleep ${SLEEP}
-```
-
-
-scRNA-Seq Normalisation: Global Factor
+2. scRNA-Seq Normalisation: Global Factor
 ========================================================
 ```{r, eval = TRUE, echo = FALSE}
 library(ggplot2);
@@ -421,3 +323,113 @@ knitr::include_graphics("zinb_wave.png")
 ZINB-WaVE: A general and flexible method for signal extraction from single-cell RNA-seq data;
 Risso, Vert et al. (2017).
 ```
+
+3. RNA-Seq Alignment Pipeline
+========================================================
+- Dependency resolution: sample_x.fastq.gz <- fastq <- bam <- counts <- table <- normalised table
+- GNU Make
+    * Macros
+    * Rules with dependencies + external programs
+    * Pattern rules
+
+
+Pipeline Structure
+========================================================
+```
+-root/Makefile
+ +- PROGRAM/Makefile
+  -       ./<aligner>
+ +- OME/Makefile
+  -   ./<genome>
+  -   /<transcriptome>
+ +- INPUT/Makefile
+  -     ./<experiment>/<sample1>/<sequence>_R1.fastq
+  -                  ./<sample2>/<sequence>_R1.fastq
+ +- OUTPUT/Makefile
+  -      ./<experiment>/<sample1>/<sequence>.counts
+  -                   ./<sample2>/<sequence>.counts
+ +- MERGE/Makefile
+        ./genali.merge
+ +- ASSEMBLE/Makefile
+  -        ./genali.assemble
+ +- QUALITY/Makefile
+  -       ./genali.quality
+ +- NORMALISE/Makefile
+  -         ./genali.normalise
+```
+
+Master Makefile
+========================================================
+```{make, eval = FALSE}
+-include config.mk
+
+SMP = $(notdir $(shell find ./INPUT/${EXP}/ -type d -name ${SAMPLEPREFIX}))
+
+all : align postalign proc 
+align : config exp program ome samplein input output
+postalign : exp sampleout count
+proc : log merge quality normalise pca 
+
+program :
+    cd PROGRAM || exit 1 ; ${MAKE} all "PARALLEL=${PARALLEL}" "GUNZIP=${GUNZIP}"
+      "ALI=${ALI}" "RSCRIPT=${RSCRIPT}" "FEATURECOUNTS=${FEATURECOUNTS}"
+
+output :
+    cd OUTPUT || exit 1 ; ${MAKE} all "EXP=${EXP}" "SMP=${SMP}"
+      "SAMPLEPREFIX=${SAMPLEPREFIX}" "GENALIHOME=${GENALIHOME}"
+      "CLU=${CLU}" "QUEUE=${QUEUE}" "ALI=${ALI}" "ALIMODE=${ALIMODE}"
+      "ALIOPT=${ALIOPT}" "OME=${OME}" "SINGLE=${SINGLE}"
+      "SLEEP=${SLEEP}" "NCPU=${NCPU}""
+```
+
+
+OUTPUT Makefile with Dependency
+========================================================
+```{make, eval = FALSE}
+SMPOUT = $(notdir $(shell find ./${EXP}/ -type d -name ${SAMPLEPREFIX}))
+
+all : sampledir link mkalign
+
+ifeq ($(strip ${ALI}),tophat2)
+    for X in ${SMP} ; do \
+        ${MAKE} align_tophat2 "EXP=${EXP}" "X=$$X" \
+                         "GENALIHOME=${GENALIHOME}" \
+                         "CLU=${CLU}" "QUEUE=${QUEUE}" \
+                         "ALI=${ALI}" "ALIMODE=${ALIMODE}" "ALIOPT=${ALIOPT}" \
+                         "OME=${OME}" "SINGLE=${SINGLE}" \
+                         "SLEEP=${SLEEP}" "NCPU=${NCPU}" ; \
+    done
+    srun --dependency=singleton --job-name=GIfa.${EXPNR} singleton.bash
+endif
+
+align_tophat2 : ${EXP}/$X/accepted_hits.bam
+```
+
+
+Pattern Rules
+========================================================
+```
+%/accepted_hits.bam : %/genali_R1.fastq
+$(info running in single-end mode)
+
+srun --job-name=GIfa.${EXPNR} ${QUEUE}
+  -o ${EXP}/$X/genali.o -e ${EXP}/$X/genali.e
+  ${GENALIHOME}/PROGRAM/${ALI} ${ALIOPT}
+  -p ${NCPU} -o ${EXP}/$X
+  ../OME/$(strip ${OME})/Sequence/Bowtie2Index/genome $^
+    > ${EXP}/$X/aligner.o 2> ${EXP}/$X/aligner.e &
+
+sleep ${SLEEP}
+```
+
+
+4. Trends
+========================================================
+* Machine learning becomes increasingly important
+* Nano-pore sequencing (10% error rate) produces long reads, leading to easier genome assembly
+* Fast algorighms for genome assembly and comparison (Adam M. Philippy)
+* 3D structure and dynamics (multi-level modelling) of chromatin (Paul Michalski)
+* Sequencing is all forms, in particular for immunologic and cancer studies
+* Microtome dissection and sequencing of the nucleus to map chromatin contacts (Ana Pombo)
+* Multiplexed Ion Beam Imaging (MIBI) using secondary mass spectrometry (Garry P. Nolan)
+
