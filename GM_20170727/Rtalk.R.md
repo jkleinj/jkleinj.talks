@@ -50,27 +50,19 @@ which breaks up graphs into semantic components such as scales and layers.
 The 'R Graphics Cookbook' by Winston Chang provides a set of recipes
 to solve common graphics problems.
 ***
-```{r, eval = FALSE}
+
+```r
 install.packages("ggplot2")
 ```
-```{r, echo = FALSE}
-library(ggbiplot)
-data(wine)
-wine.pca <- prcomp(wine, scale. = TRUE)
-ggbiplot(wine.pca, obs.scale = 1, var.scale = 1,
-  groups = wine.class, ellipse = TRUE, circle = TRUE) +
-  scale_color_discrete(name = '') +
-  theme(legend.direction = 'horizontal', legend.position = 'top')
-```
+![plot of chunk unnamed-chunk-2](Rtalk.R-figure/unnamed-chunk-2-1.png)
 
 
 Biplot
 ========================================================
-```{r, out.width= "800px", echo = FALSE}
-knitr::include_graphics("biplot_semisuperv.png")
-```
+<img src="biplot_semisuperv.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" width="800px" />
 ***
-```{r, eval = FALSE}
+
+```r
 library(devtools)
 install_github("vqv/ggbiplot")
 library(ggbiplot);
@@ -87,11 +79,10 @@ g = g + geom_segment(data = df.v[gene.glial.nidx, ], aes(x = 0, y = 0, xend = xv
 
 Heatmap
 ========================================================
-```{r, out.width = "800px", echo = FALSE}
-knitr::include_graphics("heatmap_key.png")
-```
+<img src="heatmap_key.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" width="800px" />
 ***
-```{r, eval = FALSE}
+
+```r
 install.packages(“gplots”)
 library(gplots)
 
@@ -110,11 +101,10 @@ heatmap.2(clu_rnd.mat,
 Gene Bars
 ========================================================
 right: 70%
-```{r, out.height = "800px", echo = FALSE}
-knitr::include_graphics("Gbars.Tubb3.cutoff.png")
-```
+<img src="Gbars.Tubb3.cutoff.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" height="800px" />
 ***
-```{r, eval = FALSE}
+
+```r
 pValCutoff = -log10(5e-2 / dim(Yhet)[2]);
 
 Yh.G.1 = Yhet[ , glialID1];
@@ -130,7 +120,8 @@ lmAll <- t(apply(Yhet ,
 }))
 ```
 
-```{r, eval = FALSE}
+
+```r
 g = ggplot(gene_corr, aes(x = rank, y = nlogpvalnum)) +
   geom_bar(stat = "identity", fill = colour, width = 0.75);
 g = g + coord_flip(xlim = c(1, 35), ylim = c(pValCutoff, 22));
@@ -141,17 +132,17 @@ g = g + scale_x_discrete(limits =
 
 3D Profile
 ========================================================
-```{r, out.width = "800px", echo = FALSE}
-knitr::include_graphics("bifurk_3d_box.png")
-```
+<img src="bifurk_3d_box.png" title="plot of chunk unnamed-chunk-10" alt="plot of chunk unnamed-chunk-10" width="800px" />
 ***
-```{r, eval = FALSE}
+
+```r
 x = glial.marker.exp.mean;
 y = neuronal.marker.exp.mean;
 den3d.cell = kde2d(x, y);
 ```
 
-```{r, eval = FALSE}
+
+```r
 persp(den3d.cell, box = TRUE, theta = -120, 
   col = rgb(red = col.mat,
         green = (0.65 * col.mat),
@@ -162,33 +153,7 @@ persp(den3d.cell, box = TRUE, theta = -120,
 
 2. scRNA-Seq Normalisation: Global Factor
 ========================================================
-```{r, eval = TRUE, echo = FALSE}
-library(ggplot2);
-## create synthetic expression data for 6 cells
-## number of genes
-g = c(1:8);
-## cells
-c1 = data.frame(rep(1, length(g)), log2(2^g));
-colnames(c1) = c("cell", "expr");
-c2 = data.frame(rep(2, length(g)), log2(2^g) * 1.1);
-colnames(c2) = c("cell", "expr");
-c3 = data.frame(rep(3, length(g)), log2(2^g) * 1.2);
-colnames(c3) = c("cell", "expr");
-c4 = data.frame(rep(4, length(g)), log2(2^g) * 1.7);
-colnames(c4) = c("cell", "expr");
-c5 = data.frame(rep(5, length(g)), log2(2^g) * 1.6);
-colnames(c5) = c("cell", "expr");
-c6 = data.frame(rep(6, length(g)), log2(2^g) * 1.5);
-colnames(c6) = c("cell", "expr");
-
-df = rbind(c1, c2, c3, c4, c5, c6);
-colnames(df) = c("cell", "expr");
-
-ggplot() +
-geom_crossbar(data = df, aes(x = cell, ymin = expr, ymax = expr, y = expr, colour = cell)) +
-ylab("log(expr)") +
-scale_x_continuous(breaks = c(1,2,3,4,5,6), labels = c("cell1", "cell2", "cell3", "cell4", "cell5", "cell6"));
-```
+![plot of chunk unnamed-chunk-13](Rtalk.R-figure/unnamed-chunk-13-1.png)
 ***
 * Plotted is the log expression of 8 genes or gene groups (biological factors) in 6 single cells
 * The difference between the expression of individual cells is a constant factor.
@@ -201,36 +166,7 @@ v = (1, 1.1, 1.2, 1.7, 1.6, 1.5);
 
 More Complicated: + Differential Gene Expression
 ========================================================
-```{r, eval = TRUE, echo = FALSE}
-library(ggplot2);
-## create synthetic expression data for 6 cells
-## number of genes
-g = c(1:8);
-## cells
-c1 = data.frame(rep(1, length(g)), log2(2^g));
-colnames(c1) = c("cell", "expr");
-c2 = data.frame(rep(2, length(g)), log2(2^g) * 1.1);
-colnames(c2) = c("cell", "expr");
-c3 = data.frame(rep(3, length(g)), log2(2^g) * 1.2);
-colnames(c3) = c("cell", "expr");
-c4 = data.frame(rep(4, length(g)), log2(2^g) * 1.7);
-c4[8, 2] = c4[8, 2] + 2;
-colnames(c4) = c("cell", "expr");
-c5 = data.frame(rep(5, length(g)), log2(2^g) * 1.6);
-c5[8, 2] = c5[8, 2] + 2.5;
-colnames(c5) = c("cell", "expr");
-c6 = data.frame(rep(6, length(g)), log2(2^g) * 1.5);
-c6[8, 2] = c6[8, 2] + 2.5;
-colnames(c6) = c("cell", "expr");
-
-df = rbind(c1, c2, c3, c4, c5, c6);
-colnames(df) = c("cell", "expr");
-
-ggplot() +
-geom_crossbar(data = df, aes(x = cell, ymin = expr, ymax = expr, y = expr, colour = cell)) +
-ylab("log(expr)") +
-scale_x_continuous(breaks = c(1,2,3,4,5,6), labels = c("cell1", "cell2", "cell3", "cell4", "cell5", "cell6"));
-```
+![plot of chunk unnamed-chunk-14](Rtalk.R-figure/unnamed-chunk-14-1.png)
 ***
 * Here we have a highly differentially expressed gene in cell group (4,5,6).
 * How do we normalise now?
@@ -241,53 +177,17 @@ scale_x_continuous(breaks = c(1,2,3,4,5,6), labels = c("cell1", "cell2", "cell3"
 
 Even More Complicated: + Zero Inflation
 ========================================================
-```{r, eval = TRUE, echo = FALSE}
-library(ggplot2);
-## create synthetic expression data for 6 cells
-## number of genes
-g = c(1:8);
-## cells
-c1 = data.frame(rep(1, length(g)), log2(2^g));
-c1[c(1,2,3,5), 2] = 0;
-colnames(c1) = c("cell", "expr");
-c2 = data.frame(rep(2, length(g)), log2(2^g) * 1.1);
-c2[c(2,3,6), 2] = 0;
-colnames(c2) = c("cell", "expr");
-c3 = data.frame(rep(3, length(g)), log2(2^g) * 1.2);
-c3[c(1,2,4,5), 2] = 0;
-colnames(c3) = c("cell", "expr");
-c4 = data.frame(rep(4, length(g)), log2(2^g) * 1.7);
-c4[c(2,4), 2] = 0;
-c4[8, 2] = c4[8, 2] + 2;
-colnames(c4) = c("cell", "expr");
-c5 = data.frame(rep(5, length(g)), log2(2^g) * 1.6);
-c5[c(1,4,7), 2] = 0;
-c5[8, 2] = c5[8, 2] + 2.5;
-colnames(c5) = c("cell", "expr");
-c6 = data.frame(rep(6, length(g)), log2(2^g) * 1.5);
-c6[c(1,2,3), 2] = 0;
-c6[8, 2] = c6[8, 2] + 2.5;
-colnames(c6) = c("cell", "expr");
-
-df = rbind(c1, c2, c3, c4, c5, c6);
-colnames(df) = c("cell", "expr");
-
-ggplot() +
-geom_crossbar(data = df, aes(x = cell, ymin = expr, ymax = expr, y = expr, colour = cell)) +
-ylab("log(expr)") +
-scale_x_continuous(breaks = c(1,2,3,4,5,6), labels = c("cell1", "cell2", "cell3", "cell4", "cell5", "cell6"));
-```
+![plot of chunk unnamed-chunk-15](Rtalk.R-figure/unnamed-chunk-15-1.png)
 ***
 * Zero inflation means that many genes are not detected, although they should be detectable.
+* The negative binomial fit is distorted and models it by overdispersion.
 * The expression values ==0 distort averaging, which is used in some RNA-Seq software like DESeq.
 * Additionally, methods that rely on multi-variate expression vectors are compromised.
 
 
 Even More Complicated: + Dependency on Count-Depth
 ========================================================
-```{r, out.width = "800px", echo = FALSE}
-knitr::include_graphics("scnorm.png")
-```
+<img src="scnorm.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" width="800px" />
 ***
 * Sequencing depth influences the relative gene expression values.
 * The SCnorm package addresses this problem by performing a controlled quantile regression.
@@ -300,9 +200,7 @@ Bacher, Kendziorski et al. (2017).
 
 scran
 ========================================================
-```{r, out.width = "800px", echo = FALSE}
-knitr::include_graphics("scran.png")
-```
+<img src="scran.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" width="800px" />
 ***
 * Compute batch vector between pairs of mutual nearest neighbour cells.
 * Calculate cell-specific batch correction vector from weighted average over all pairwise vectors, using a Gaussian kernel.
@@ -315,9 +213,7 @@ Haghverdi, Marioni et al. (2017).
 
 zinb-wave
 ========================================================
-```{r, out.width = "1400", echo = FALSE}
-knitr::include_graphics("zinb_wave.png")
-```
+<img src="zinb_wave.png" title="plot of chunk unnamed-chunk-18" alt="plot of chunk unnamed-chunk-18" width="1400" />
 
 ```
 ZINB-WaVE: A general and flexible method for signal extraction from single-cell RNA-seq data;
@@ -360,7 +256,8 @@ Pipeline Structure
 
 Master Makefile
 ========================================================
-```{make, eval = FALSE}
+
+```make
 -include config.mk
 
 SMP = $(notdir $(shell find ./INPUT/${EXP}/ -type d -name ${SAMPLEPREFIX}))
@@ -385,7 +282,8 @@ output :
 
 OUTPUT Makefile with Dependency
 ========================================================
-```{make, eval = FALSE}
+
+```make
 SMPOUT = $(notdir $(shell find ./${EXP}/ -type d -name ${SAMPLEPREFIX}))
 
 all : sampledir link mkalign
@@ -427,9 +325,9 @@ sleep ${SLEEP}
 ========================================================
 * Machine learning becomes increasingly important
 * Nano-pore sequencing (10% error rate) produces long reads, leading to easier genome assembly
-* Fast algorighms for genome assembly and comparison (Adam M. Philippy)
+* Fast algorithms for genome assembly and comparison (Adam M. Philippy)
 * 3D structure and dynamics (multi-level modelling) of chromatin (Paul Michalski)
-* Sequencing is all forms, in particular for immunologic and cancer studies
+* Sequencing in all forms, in particular for immunologic and cancer studies
 * Microtome dissection and sequencing of the nucleus to map chromatin contacts (Ana Pombo)
 * Multiplexed Ion Beam Imaging (MIBI) using secondary mass spectrometry (Garry P. Nolan)
 
