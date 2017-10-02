@@ -1,0 +1,247 @@
+
+Recent Publications and Allostery Project
+=========================================================
+author: Jens Kleinjung
+date: 03.10.2017
+width: 1920
+height: 1080
+font-family: 'Helvetica'
+navigation: slide
+transition: none
+#autosize: true
+
+1. Blastocyst
+========================================================
+incremental: true
+<img src="fig/blacy_mosaic.png" title="PCA" width="800px" />
+<small>
+```
+Genome editing reveals a role for OCT4 in human embryogenesis.
+Fogarty, ..., Niakan (Sep. 2017) Nature.
+```
+</small>
+***
+<img src="fig/PCA_KO_1_7x7.png" title="PCA" width="800px" />
+
+
+========================================================
+
+<img src="fig/febs13879-toc-0001-m.png" title="FEBS cover" width="800px" />
+***
+<small>
+```
+An engineered photoswitchable mammalian pyruvate kinase.
+Gehrig, ..., Anastasiou et al.(2017) The FEBS Journal.
+```
+</small>
+
+
+========================================================
+incremental: true
+<img src="fig/PKM2_sim.png" title="PKM2 simulation" width="800px" />
+***
+
+
+3. Fragments: The M32K25 Structural Alphabet
+========================================================
+<img src="fig/1D3D_music1.png" title="fragment" width="800px" />
+
+
+Symbolic Abstraction
+========================================================
+<img src="fig/1D3D_music1.png" title="fragment" width="800px" />
+***
+<img src="fig/1D3D_protein1.png" title="fragment" width="800px" />
+
+
+Attractors in Conformational Space
+========================================================
+left: 70%
+<img src="fig/attractors.png" title="fragment" width="1200px" />
+<img src="fig/fragment.png" title="fragment" width="600px" />
+***
+* Clearly defined attractors
+* Local energy minima
+* Protein structure is assembly of local energy minima
+* Structural sequences as new abstraction layer
+
+
+Canonical Fragments
+========================================================
+![alt text](fig/M32K25_anim.gif)
+***
+* 25 canonical C$_4^{\alpha}$ fragments
+* Fit quality: 0.70-1.00 Å RMSD for global fit (superimposed ends)
+* Encoding of dynamics: Correlation >0.7 between RMSF and H$_{Shannon}$(M32K25)
+
+<small>
+```
+Structural alphabets derived from attractors in conformational space.
+Pandini, Kleinjung et al., BMC Bioinformatics 11 (2010) 97.
+```
+</small>
+
+
+Fragment Fit
+========================================================
+![alt text](fig/M32K25_expel.gif)
+***
+<img src="fig/bundle.png" title="bundle" width="350px" />
+$$ RMSF = \sqrt{\langle r^2 \rangle - \langle r \rangle ^2} $$
+***
+```
+...WUWVURPNMUVWVVUUUW...
+...UUUVXTOTSUWUUUVWVW...
+...VUTVXRJUQXVUUVWTWV...
+...VWUVXTFQQUWXUUVUUU...
+...XXTUWSOTRUWVUUVWUU...
+...XXTWXROUSUUUUUUUWU...
+```
+
+$$ H_{Shannon} = - \sum p_i \; log \; p_i $$
+
+
+4. Analysis of Allosteric Signal Transmission
+========================================================
+<img src="fig/GSAtools.png" title="GSAtools" width="800px" />
+***
+<small>
+```
+GSATools: analysis of allosteric communication and functional local motions in GROMACS using a Structural Alphabet.
+Pandini et al., Bioinformatics 29 (2013) 2053–2055.
+```
+</small>
+
+
+Allostery in NtrC
+========================================================
+<img src="fig/NtrC_allostery.png" title="NtrC_allostery" width="1600px" />
+
+
+PKM2 Long-range Couplings
+========================================================
+<img src="fig/FBP_apo.png" title="FBPapo" width="500px" />
+<img src="fig/FBP_holo.png" title="FBPholo" width="500px" />
+<img src="fig/FBP_phe.png" title="FBPphe" width="500px" />
+<small>
+```
+See also:
+An engineered photoswitchable mammalian pyruvate kinase.
+Gehrig et al., FEBS J. (2017) 14175.
+```
+</small>
+
+
+The Enteric Nervous System
+========================================================
+<img src="fig/gut.png" title="gut" width="800px" />
+***
+
+
+The Enteric Nervous System
+========================================================
+<img src="fig/gut.png" title="gut" width="800px" />
+(D) Model depicting the organization of small intestine ENS into
+overlapping columns along the serosa-mucosa axis.
+***
+<img src="fig/ENS_scheme.png" title="ENS_scheme" width="800px" />
+
+
+Neurons and Glia
+========================================================
+<img src="fig/heatmap_key.png" title="ENS_heatmap" width="800px" />
+<small>
+```
+Lineage-dependent spatial and functional organization of the mammalian enteric nervous system.
+Lasrado, Kleinjung, Pachnis et al. (2017) Science 356, 722-726.
+```
+</small>
+***
+
+
+Neurons and Glia
+========================================================
+<img src="fig/heatmap_key.png" title="ENS_heatmap" width="800px" />
+<small>
+```
+Lineage-dependent spatial and functional organization of the mammalian enteric nervous system.
+Lasrado, Kleinjung, Pachnis et al. (2017) Science 356, 722-726.
+```
+</small>
+***
+<img src="fig/biplot_semisuperv.png" title="ENS_biplot" width="800px" />
+
+
+Acknowledgements
+========================================================
+**Sequence Alignment**
+* Cedric Notredame (CRG, Barcelona)
+* Kuang Lin (University of Oxford)
+* Willie Taylor (Francis Crick Institute, London)
+
+**Simulations**
+* Franca Fraternali (King's College, London)
+* Wilfred van Gunsteren (ETH Z&uuml;rich)
+
+**Allostery**
+* Alessandro Pandini (Brunel University, London)
+* Arianna Fornili (Queen Mary University, London)
+* James Macpherson (Francis Crick Institute, London)
+
+***
+
+**RNA-Seq**
+* James Briscoe (Francis Crick Institute, London)
+
+**ENS**
+* Reena Lasrado (Francis Crick Institute, London)
+* Vassilis Pachnis (Francis Crick Institute, London)
+
+
+Implicit Solvent
+=======================================================
+<small>
+<img src="fig/sasa_boxplot.png" title="SASA boxplot" width="700px" />
+```
+Implicit solvation parameters derived from explicit water forces in large-scale molecular dynamics simulations.
+J. Chem. Theory Comput. 8 (2012) 2391–2403.
+```
+</small>
+
+
+5. Transcriptomics: Single-cell RNA-Seq Data Analysis
+========================================================
+<img src="fig/flowcell.png" title="flowcell" width="800px" />
+<small>
+```
+Fluidigm C1 Single-Cell AutoPrep Array IFC Workflow.mp4
+````
+</small>
+****
+## GNU make pipeline
+**Pre-processing**
+* Genome aligner
+* Reference genome
+* Input reads
+
+**Sample processing**
+* Alignment of transcript reads
+* Transcript counting
+* Merging of cell samples
+
+**Post-processing**
+* Quality filter
+* Normalisation
+* PCA
+
+
+CRISPR-CAS9 Edited Embryos
+========================================================
+<img src="fig/PCA_BlaCy.png" title="PCA_BlaCy" width="800px" />
+***
+<small>
+```
+Genome editing reveals a role for OCT4 in human embryogenesis.
+Fogarty et al. (2017) Nature, Sep. 2017.
+```
+</small>

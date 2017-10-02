@@ -7,7 +7,7 @@ autosize: true
 
 Overview
 ========================================================
-1. Semi-supervised RNA-Seq analysis
+1.Semi-supervised RNA-Seq analysis
 2. Single-cell RNA-Seq Normalisation
 3. Data Pipelines (with 'GNU make')
 4. Trends (Keystone and ISMB conferences)
