@@ -40,6 +40,23 @@ Gehrig, ..., Anastasiou et al.(2017) The FEBS Journal.
 incremental: true
 <img src="fig/PKM2_sim.png" title="PKM2 simulation" width="800px" />
 ***
+<img src="fig/PKM2_deltaG.png" title="PKM2 deltaG" width="600px" />
+
+
+Chimera with Light-oxygen-voltage-sensing Domain
+========================================================
+incremental: true
+<img src="fig/PKM2_HLH.png" title="helix-loop-helix" width="800px" />
+***
+<img src="fig/PiLD24.png" title="PiLD24" width="800px" />
+
+
+Light-modulated Enzymatic Activity
+========================================================
+incremental: true
+<img src="fig/PiLD24_activ1.png" title="PiLD2  4 activity 1" width="800px" />
+***
+<img src="fig/PiLD24_activ2.png" title="PiLD24 activity 2" width="800px" />
 
 
 3. Fragments: The M32K25 Structural Alphabet
@@ -132,116 +149,12 @@ Gehrig et al., FEBS J. (2017) 14175.
 </small>
 
 
-The Enteric Nervous System
+Next
 ========================================================
-<img src="fig/gut.png" title="gut" width="800px" />
-***
-
-
-The Enteric Nervous System
-========================================================
-<img src="fig/gut.png" title="gut" width="800px" />
-(D) Model depicting the organization of small intestine ENS into
-overlapping columns along the serosa-mucosa axis.
-***
-<img src="fig/ENS_scheme.png" title="ENS_scheme" width="800px" />
-
-
-Neurons and Glia
-========================================================
-<img src="fig/heatmap_key.png" title="ENS_heatmap" width="800px" />
+<img src="fig/GPCR.png" title="GPCR" width="800px" />
 <small>
 ```
-Lineage-dependent spatial and functional organization of the mammalian enteric nervous system.
-Lasrado, Kleinjung, Pachnis et al. (2017) Science 356, 722-726.
-```
-</small>
-***
-
-
-Neurons and Glia
-========================================================
-<img src="fig/heatmap_key.png" title="ENS_heatmap" width="800px" />
-<small>
-```
-Lineage-dependent spatial and functional organization of the mammalian enteric nervous system.
-Lasrado, Kleinjung, Pachnis et al. (2017) Science 356, 722-726.
-```
-</small>
-***
-<img src="fig/biplot_semisuperv.png" title="ENS_biplot" width="800px" />
-
-
-Acknowledgements
-========================================================
-**Sequence Alignment**
-* Cedric Notredame (CRG, Barcelona)
-* Kuang Lin (University of Oxford)
-* Willie Taylor (Francis Crick Institute, London)
-
-**Simulations**
-* Franca Fraternali (King's College, London)
-* Wilfred van Gunsteren (ETH Z&uuml;rich)
-
-**Allostery**
-* Alessandro Pandini (Brunel University, London)
-* Arianna Fornili (Queen Mary University, London)
-* James Macpherson (Francis Crick Institute, London)
-
-***
-
-**RNA-Seq**
-* James Briscoe (Francis Crick Institute, London)
-
-**ENS**
-* Reena Lasrado (Francis Crick Institute, London)
-* Vassilis Pachnis (Francis Crick Institute, London)
-
-
-Implicit Solvent
-=======================================================
-<small>
-<img src="fig/sasa_boxplot.png" title="SASA boxplot" width="700px" />
-```
-Implicit solvation parameters derived from explicit water forces in large-scale molecular dynamics simulations.
-J. Chem. Theory Comput. 8 (2012) 2391–2403.
+[By Opabinia regalis - Own work, CC BY-SA 3.0](https://commons.wikimedia.org/w/index.php?curid=38540293)
 ```
 </small>
 
-
-5. Transcriptomics: Single-cell RNA-Seq Data Analysis
-========================================================
-<img src="fig/flowcell.png" title="flowcell" width="800px" />
-<small>
-```
-Fluidigm C1 Single-Cell AutoPrep Array IFC Workflow.mp4
-````
-</small>
-****
-## GNU make pipeline
-**Pre-processing**
-* Genome aligner
-* Reference genome
-* Input reads
-
-**Sample processing**
-* Alignment of transcript reads
-* Transcript counting
-* Merging of cell samples
-
-**Post-processing**
-* Quality filter
-* Normalisation
-* PCA
-
-
-CRISPR-CAS9 Edited Embryos
-========================================================
-<img src="fig/PCA_BlaCy.png" title="PCA_BlaCy" width="800px" />
-***
-<small>
-```
-Genome editing reveals a role for OCT4 in human embryogenesis.
-Fogarty et al. (2017) Nature, Sep. 2017.
-```
-</small>
